@@ -2,7 +2,7 @@ from supervised_learning.BaseEstimator import BaseEstimator
 import numpy as np
 import pandas as pd
 
-class LinearRegression(BaseException):
+class LinearRegression(BaseEstimator):
     def __init__(self):
         self.coef_ = None  # Coefficients (weights) of the linear regression model
         self.intercept_ = None  # Intercept of the linear regression model
