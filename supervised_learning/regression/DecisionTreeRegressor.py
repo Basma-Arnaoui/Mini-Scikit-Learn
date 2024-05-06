@@ -19,21 +19,21 @@ class DecisionTreeRegressor(BaseEstimator):
     def _build_tree(self, dataset, depth=0):
         X, Y = dataset[:,:-1], dataset[:,-1]
         num_samples, num_features = np.shape(X)
-        
+
         if num_samples >= self.min_samples_split and (self.max_depth is None or depth <= self.max_depth):
             best_split = self._get_best_split(dataset, num_samples, num_features)
-            if best_split["var_red"] > 0:
+            if best_split.get("var_red", 0) > 0:
                 left_subtree = self._build_tree(best_split["dataset_left"], depth+1)
                 right_subtree = self._build_tree(best_split["dataset_right"], depth+1)
                 return Node(best_split["feature_index"], best_split["threshold"], left_subtree, right_subtree, best_split["var_red"])
-        
+
         leaf_value = self._calculate_leaf_value(Y)
         return Node(value=leaf_value)
 
     def _get_best_split(self, dataset, num_samples, num_features):
-        best_split = {}
+        best_split = {"var_red": 0}
         max_var_red = -float("inf")
-        
+
         for feature_index in range(num_features):
             feature_values = dataset[:, feature_index]
             possible_thresholds = np.unique(feature_values)
@@ -43,7 +43,13 @@ class DecisionTreeRegressor(BaseEstimator):
                     y, left_y, right_y = dataset[:, -1], dataset_left[:, -1], dataset_right[:, -1]
                     curr_var_red = self._variance_reduction(y, left_y, right_y)
                     if curr_var_red > max_var_red:
-                        best_split = {"feature_index": feature_index, "threshold": threshold, "dataset_left": dataset_left, "dataset_right": dataset_right, "var_red": curr_var_red}
+                        best_split = {
+                            "feature_index": feature_index,
+                            "threshold": threshold,
+                            "dataset_left": dataset_left,
+                            "dataset_right": dataset_right,
+                            "var_red": curr_var_red
+                        }
                         max_var_red = curr_var_red
         return best_split
 
