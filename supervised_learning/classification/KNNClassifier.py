@@ -27,3 +27,12 @@ class KNNClassifier(BaseEstimator):
         # Majority vote
         most_common = Counter(nearest_labels).most_common(1)
         return most_common[0][0]
+
+    def get_params(self, deep=True):
+        return {"n_neighbors": self.n_neighbors}
+
+    def set_params(self, **params):
+        for param, value in params.items():
+            setattr(self, param, value)
+        return self
+     

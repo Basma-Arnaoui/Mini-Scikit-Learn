@@ -2,8 +2,8 @@ import numpy as np
 from supervised_learning.regression.DecisionTreeRegressor import DecisionTreeRegressor
 from sklearn.utils import resample
 from sklearn.metrics import r2_score
-
-class RandomForestRegressor:
+from supervised_learning.BaseEstimator import BaseEstimator
+class RandomForestRegressor(BaseEstimator):
     def __init__(self, n_estimators=10, min_samples_split=2, max_depth=None, oob_score=False):
         self.n_estimators = n_estimators
         self.min_samples_split = min_samples_split

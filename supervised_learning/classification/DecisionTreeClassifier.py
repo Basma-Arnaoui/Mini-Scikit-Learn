@@ -73,8 +73,11 @@ class DecisionTreeClassifier(BaseEstimator):
         return max(Y, key=Y.count)
 
     def fit(self, X, Y):
+        Y = Y.reshape(-1, 1)  # Reshape Y to be 2-dimensional
         dataset = np.concatenate((X, Y), axis=1)
         self.root = self.build_tree(dataset)
+
+        
 
     def predict(self, X):
         return np.array([self.make_prediction(x, self.root) for x in X])
@@ -87,3 +90,11 @@ class DecisionTreeClassifier(BaseEstimator):
             return self.make_prediction(x, tree.left)
         else:
             return self.make_prediction(x, tree.right)
+
+    def get_params(self, deep=True):
+        return {"min_samples_split": self.min_samples_split, "max_depth":self.max_depth }
+
+    def set_params(self, **params):
+        for param, value in params.items():
+            setattr(self, param, value)
+        return self

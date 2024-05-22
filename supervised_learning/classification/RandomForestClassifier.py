@@ -34,3 +34,12 @@ class RandomForestClassifier(BaseEstimator):
         counter = Counter(y)
         most_common = counter.most_common(1)[0][0]
         return most_common
+    
+    def get_params(self, deep=True):
+        return {"n_estimators": self.n_estimators, "max_depth":self.max_depth , "min_samples_split":self.min_samples_split,
+            "max_features":self.max_features, "random_state":self.random_state    }
+
+    def set_params(self, **params):
+        for param, value in params.items():
+            setattr(self, param, value)
+        return self
