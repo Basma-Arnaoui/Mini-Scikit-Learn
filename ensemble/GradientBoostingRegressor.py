@@ -2,6 +2,40 @@ import numpy as np
 from sklearn.tree import DecisionTreeRegressor
 
 class GradientBoostingRegressor:
+    """
+    Gradient Boosting Regressor implementation using DecisionTreeRegressor as the base estimator.
+
+    Parameters
+    ----------
+    n_estimators : int, default=100
+        The number of boosting stages to be run.
+    
+    learning_rate : float, default=0.1
+        Shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.
+    
+    max_depth : int, default=3
+        Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree.
+    
+    random_state : int, RandomState instance or None, default=None
+        Controls the randomness of the estimator. The features are always randomly permuted at each split.
+    
+    Attributes
+    ----------
+    trees : list
+        List of fitted trees (weak learners).
+    
+    initial_prediction : float
+        Initial prediction for all instances.
+
+    Methods
+    -------
+    fit(X, y)
+        Build a gradient boosting regressor from the training set (X, y).
+
+    predict(X)
+        Predict target values for X.
+    """
+
     def __init__(self, n_estimators=100, learning_rate=0.1, max_depth=3, random_state=None):
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
@@ -11,6 +45,18 @@ class GradientBoostingRegressor:
         self.initial_prediction = None
 
     def fit(self, X, y):
+        """
+        Build a gradient boosting regressor from the training set (X, y).
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The training input samples.
+        
+        y : array-like of shape (n_samples,)
+            The target values (continuous).
+
+        """
         # Initial prediction (mean)
         self.initial_prediction = np.mean(y)
         F = np.full(y.shape, self.initial_prediction)
@@ -24,6 +70,19 @@ class GradientBoostingRegressor:
             self.trees.append(tree)
 
     def predict(self, X):
+        """
+        Predict target values for X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        y_pred : array-like of shape (n_samples,)
+            The predicted target values.
+        """
         F = np.full(X.shape[0], self.initial_prediction)
         for tree in self.trees:
             F += self.learning_rate * tree.predict(X)
