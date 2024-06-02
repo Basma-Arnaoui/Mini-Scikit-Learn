@@ -34,6 +34,11 @@ class AdaBoost:
     """
 
     def __init__(self, n_estimators=50, learning_rate=1.0):
+        if not isinstance(n_estimators, int) or n_estimators <= 0:
+            raise ValueError("n_estimators must be a positive integer.")
+        if not isinstance(learning_rate, float) or learning_rate <= 0:
+            raise ValueError("learning_rate must be a positive float.")
+        
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
         self.models = []
@@ -51,6 +56,11 @@ class AdaBoost:
         y : array-like of shape (n_samples,)
             The target values (class labels).
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         n_samples, n_features = X.shape
         sample_weights = np.full(n_samples, 1 / n_samples)
 
@@ -85,6 +95,11 @@ class AdaBoost:
         y_pred : array-like of shape (n_samples,)
             The predicted classes.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.models or not self.model_weights:
+            raise RuntimeError("The model has not been fitted yet.")
+
         model_preds = np.array([model.predict(X) for model in self.models])
         weighted_preds = np.dot(self.model_weights, model_preds)
         return np.sign(weighted_preds)
@@ -106,5 +121,8 @@ class AdaBoost:
         score : float
             The mean accuracy of the model on the test data and labels.
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        
         predictions = self.predict(X)
         return np.mean(predictions == y)

@@ -32,6 +32,13 @@ class RandomForestRegressor(BaseEstimator):
     """
 
     def __init__(self, n_estimators=10, min_samples_split=2, max_depth=None, oob_score=False):
+        if not isinstance(n_estimators, int) or n_estimators <= 0:
+            raise ValueError("n_estimators must be a positive integer.")
+        if not isinstance(min_samples_split, int) or min_samples_split <= 0:
+            raise ValueError("min_samples_split must be a positive integer.")
+        if max_depth is not None and (not isinstance(max_depth, int) or max_depth <= 0):
+            raise ValueError("max_depth must be a positive integer or None.")
+        
         self.n_estimators = n_estimators
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
@@ -51,6 +58,11 @@ class RandomForestRegressor(BaseEstimator):
         y : array-like of shape (n_samples,)
             The target values.
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+        
         n_samples = X.shape[0]
         self.trees = []
         oob_predictions = np.zeros(n_samples)
@@ -88,5 +100,10 @@ class RandomForestRegressor(BaseEstimator):
         y_pred : array-like of shape (n_samples,)
             The predicted target values.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.trees:
+            raise RuntimeError("The model has not been fitted yet.")
+        
         predictions = np.array([tree.predict(X) for tree in self.trees])
         return np.mean(predictions, axis=0)

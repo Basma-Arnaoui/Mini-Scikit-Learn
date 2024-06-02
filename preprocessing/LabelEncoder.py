@@ -37,6 +37,9 @@ class LabelEncoder:
         self : object
             Fitted encoder.
         """
+        if not isinstance(y, np.ndarray):
+            raise TypeError("y must be a numpy array.")
+        
         self.classes_ = np.unique(y)
         self.class_to_index_ = {cls: idx for idx, cls in enumerate(self.classes_)}
         return self
@@ -55,8 +58,11 @@ class LabelEncoder:
         y_encoded : array-like of shape (n_samples,)
             The encoded labels.
         """
+        if not isinstance(y, np.ndarray):
+            raise TypeError("y must be a numpy array.")
         if self.classes_ is None:
             raise RuntimeError("LabelEncoder instance needs to be fitted before being used.")
+        
         return np.array([self.class_to_index_[label] for label in y], dtype=int)
 
     def fit_transform(self, y):
@@ -89,5 +95,10 @@ class LabelEncoder:
         y : array-like of shape (n_samples,)
             The original labels.
         """
+        if not isinstance(y_encoded, np.ndarray):
+            raise TypeError("y_encoded must be a numpy array.")
+        if self.classes_ is None:
+            raise RuntimeError("LabelEncoder instance needs to be fitted before being used.")
+
         index_to_class = {idx: cls for cls, idx in self.class_to_index_.items()}
         return np.array([index_to_class[idx] for idx in y_encoded], dtype=object)

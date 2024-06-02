@@ -26,6 +26,8 @@ class SimpleImputer:
     """
 
     def __init__(self, strategy='mean'):
+        if strategy not in ['mean', 'median', 'most_frequent']:
+            raise ValueError("Strategy must be one of ['mean', 'median', 'most_frequent']")
         self.strategy = strategy
         self.statistics_ = None
 
@@ -43,14 +45,15 @@ class SimpleImputer:
         self : object
             Fitted imputer.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+
         if self.strategy == 'mean':
             self.statistics_ = np.nanmean(X, axis=0)
         elif self.strategy == 'median':
             self.statistics_ = np.nanmedian(X, axis=0)
         elif self.strategy == 'most_frequent':
             self.statistics_ = stats.mode(X, nan_policy='omit').mode[0]
-        else:
-            raise ValueError("Unsupported strategy")
         return self
 
     def transform(self, X):
@@ -67,8 +70,10 @@ class SimpleImputer:
         X_transformed : array-like of shape (n_samples, n_features)
             The imputed data.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
         if self.statistics_ is None:
-            raise RuntimeError("Imputer has not been fitted")
+            raise RuntimeError("Imputer has not been fitted.")
         
         X_transformed = np.array(X)
         for i in range(X_transformed.shape[1]):

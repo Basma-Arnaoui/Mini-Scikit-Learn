@@ -37,7 +37,9 @@ class StandardScaler:
         self : object
             Fitted scaler.
         """
-        X = np.asarray(X)
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         self.mean_ = np.mean(X, axis=0)
         self.std_ = np.std(X, axis=0)
         return self
@@ -58,8 +60,9 @@ class StandardScaler:
         """
         if self.mean_ is None or self.std_ is None:
             raise ValueError("Scaler has not been fitted.")
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
         
-        X = np.asarray(X)
         return (X - self.mean_) / self.std_
 
     def fit_transform(self, X, y=None):

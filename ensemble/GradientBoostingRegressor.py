@@ -37,6 +37,13 @@ class GradientBoostingRegressor:
     """
 
     def __init__(self, n_estimators=100, learning_rate=0.1, max_depth=3, random_state=None):
+        if not isinstance(n_estimators, int) or n_estimators <= 0:
+            raise ValueError("n_estimators must be a positive integer.")
+        if not isinstance(learning_rate, float) or learning_rate <= 0:
+            raise ValueError("learning_rate must be a positive float.")
+        if not isinstance(max_depth, int) or max_depth <= 0:
+            raise ValueError("max_depth must be a positive integer.")
+
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
         self.max_depth = max_depth
@@ -57,6 +64,11 @@ class GradientBoostingRegressor:
             The target values (continuous).
 
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         # Initial prediction (mean)
         self.initial_prediction = np.mean(y)
         F = np.full(y.shape, self.initial_prediction)
@@ -83,6 +95,11 @@ class GradientBoostingRegressor:
         y_pred : array-like of shape (n_samples,)
             The predicted target values.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.trees:
+            raise RuntimeError("The model has not been fitted yet.")
+        
         F = np.full(X.shape[0], self.initial_prediction)
         for tree in self.trees:
             F += self.learning_rate * tree.predict(X)

@@ -39,8 +39,15 @@ class LinearRegression(BaseEstimator):
         if X.ndim == 1:
             X = X.reshape(-1, 1)
 
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+        
         X_with_intercept = np.column_stack((np.ones(X.shape[0]), X))
-        coefficients = np.linalg.inv(X_with_intercept.T @ X_with_intercept) @ X_with_intercept.T @ y
+        try:
+            coefficients = np.linalg.inv(X_with_intercept.T @ X_with_intercept) @ X_with_intercept.T @ y
+        except np.linalg.LinAlgError:
+            raise np.linalg.LinAlgError("Matrix inversion failed. This might be due to singular matrix.")
+
         self.intercept_ = coefficients[0]
         self.coef_ = coefficients[1:]
 
@@ -60,6 +67,9 @@ class LinearRegression(BaseEstimator):
         """
         if isinstance(X, pd.DataFrame):
             X = X.to_numpy()
+
+        if self.intercept_ is None or self.coef_ is None:
+            raise RuntimeError("The model has not been fitted yet.")
 
         X_with_intercept = np.column_stack((np.ones(X.shape[0]), X))
         predictions = X_with_intercept @ np.concatenate(([self.intercept_], self.coef_))

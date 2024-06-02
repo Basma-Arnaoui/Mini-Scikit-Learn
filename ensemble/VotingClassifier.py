@@ -31,6 +31,11 @@ class VotingClassifier(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, estimators, voting='hard'):
+        if not isinstance(estimators, list) or not estimators:
+            raise ValueError("estimators must be a non-empty list of (str, estimator) tuples.")
+        if voting not in ('hard', 'soft'):
+            raise ValueError("voting must be either 'hard' or 'soft'.")
+
         self.estimators = estimators
         self.voting = voting
     
@@ -51,6 +56,11 @@ class VotingClassifier(BaseEstimator, ClassifierMixin):
         self : object
             Fitted estimator.
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         self.models_ = [clf.fit(X, y) for _, clf in self.estimators]
         return self
     
@@ -68,6 +78,11 @@ class VotingClassifier(BaseEstimator, ClassifierMixin):
         y_pred : array-like of shape (n_samples,)
             The predicted classes.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.models_:
+            raise RuntimeError("The model has not been fitted yet.")
+
         if self.voting == 'hard':
             predictions = np.asarray([clf.predict(X) for clf in self.models_]).T
             maj_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=1, arr=predictions)

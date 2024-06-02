@@ -41,6 +41,11 @@ class DecisionTreeClassifier(BaseEstimator):
     """
 
     def __init__(self, min_samples_split=2, max_depth=2):
+        if not isinstance(min_samples_split, int) or min_samples_split <= 0:
+            raise ValueError("min_samples_split must be a positive integer.")
+        if not isinstance(max_depth, int) or max_depth <= 0:
+            raise ValueError("max_depth must be a positive integer.")
+
         self.root = None
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
@@ -113,6 +118,11 @@ class DecisionTreeClassifier(BaseEstimator):
         Y : array-like of shape (n_samples,)
             The target values (class labels).
         """
+        if not isinstance(X, np.ndarray) or not isinstance(Y, np.ndarray):
+            raise TypeError("X and Y must be numpy arrays.")
+        if X.shape[0] != Y.shape[0]:
+            raise ValueError("The number of samples in X and Y must be equal.")
+        
         Y = Y.reshape(-1, 1)  # Reshape Y to be 2-dimensional
         dataset = np.concatenate((X, Y), axis=1)
         self.root = self.build_tree(dataset)
@@ -131,6 +141,11 @@ class DecisionTreeClassifier(BaseEstimator):
         y_pred : array-like of shape (n_samples,)
             The predicted class labels.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if self.root is None:
+            raise RuntimeError("The model has not been fitted yet.")
+
         return np.array([self.make_prediction(x, self.root) for x in X])
 
     def make_prediction(self, x, tree):

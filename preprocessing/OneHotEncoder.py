@@ -33,6 +33,9 @@ class OneHotEncoder:
         self : object
             Fitted encoder.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         for idx in range(X.shape[1]):
             unique = np.unique(X[:, idx])
             self.classes_[idx] = unique
@@ -52,10 +55,17 @@ class OneHotEncoder:
         X_transformed : array-like of shape (n_samples, n_encoded_features)
             The one-hot encoded data.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.classes_:
+            raise RuntimeError("OneHotEncoder instance is not fitted yet.")
+        
         output_rows = []
         for row in X:
             encoded_row = []
             for idx, item in enumerate(row):
+                if item not in self.classes_[idx]:
+                    raise ValueError(f"Feature value {item} not seen in fit data for feature index {idx}.")
                 template = np.zeros(len(self.classes_[idx]))
                 template[np.where(self.classes_[idx] == item)[0][0]] = 1
                 encoded_row.extend(template)

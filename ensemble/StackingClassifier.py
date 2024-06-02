@@ -36,6 +36,13 @@ class StackingClassifier:
     """
 
     def __init__(self, base_models, meta_model, n_folds=5, random_state=None):
+        if not isinstance(base_models, list) or not base_models:
+            raise ValueError("base_models must be a non-empty list.")
+        if not callable(getattr(meta_model, "fit", None)) or not callable(getattr(meta_model, "predict", None)):
+            raise ValueError("meta_model must be an estimator with fit and predict methods.")
+        if not isinstance(n_folds, int) or n_folds <= 0:
+            raise ValueError("n_folds must be a positive integer.")
+        
         self.base_models = base_models
         self.meta_model = meta_model
         self.n_folds = n_folds
@@ -54,6 +61,11 @@ class StackingClassifier:
         y : array-like of shape (n_samples,)
             The target values (class labels).
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         kfold = KFold(n_splits=self.n_folds, shuffle=True, random_state=self.random_state)
         out_of_fold_predictions = np.zeros((X.shape[0], len(self.base_models)))
 
@@ -83,6 +95,11 @@ class StackingClassifier:
         y_pred : array-like of shape (n_samples,)
             The predicted classes.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if not self.base_models_:
+            raise RuntimeError("The model has not been fitted yet.")
+
         meta_features = np.column_stack([
             np.column_stack([model.predict(X) for model in single_model]).mean(axis=1)
             for single_model in self.base_models_

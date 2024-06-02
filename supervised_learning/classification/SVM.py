@@ -25,6 +25,12 @@ class SVM:
     """
 
     def __init__(self, learning_rate=0.001, lambda_param=0.01, n_iters=1000):
+        if learning_rate <= 0:
+            raise ValueError("learning_rate must be positive.")
+        if lambda_param <= 0:
+            raise ValueError("lambda_param must be positive.")
+        if n_iters <= 0:
+            raise ValueError("n_iters must be positive.")
         self.lr = learning_rate
         self.lambda_param = lambda_param
         self.n_iters = n_iters
@@ -32,17 +38,11 @@ class SVM:
         self.b = None
 
     def fit(self, X, y):
-        """
-        Fit the SVM classifier to the training data.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The training input samples.
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
         
-        y : array-like of shape (n_samples,)
-            The target values (class labels).
-        """
         n_samples, n_features = X.shape
         y_ = np.where(y <= 0, -1, 1)
         
@@ -59,18 +59,10 @@ class SVM:
                     self.b -= self.lr * y_[idx]
 
     def predict(self, X):
-        """
-        Predict class labels for samples in X.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The input samples.
-
-        Returns
-        -------
-        y_pred : array-like of shape (n_samples,)
-            The predicted class labels.
-        """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if X.shape[1] != self.w.shape[0]:
+            raise ValueError("The number of features in X must match the number of features in the training data.")
+        
         linear_output = np.dot(X, self.w) - self.b
         return np.sign(linear_output)

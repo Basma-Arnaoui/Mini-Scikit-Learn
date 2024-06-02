@@ -37,7 +37,9 @@ class MinMaxScaler:
         self : object
             Fitted scaler.
         """
-        X = np.asarray(X)
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         self.min = np.min(X, axis=0)
         self.max = np.max(X, axis=0)
         return self
@@ -58,7 +60,9 @@ class MinMaxScaler:
         """
         if self.min is None or self.max is None:
             raise ValueError("Scaler has not been fitted.")
-        X = np.asarray(X)
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         return (X - self.min) / (self.max - self.min)
 
     def fit_transform(self, X, y=None):
@@ -75,7 +79,7 @@ class MinMaxScaler:
 
         Returns
         -------
-        X_new : ndarray of shape (n_samples, n_features)
+        X_transformed : ndarray of shape (n_samples, n_features)
             Transformed array.
         """
         self.fit(X)

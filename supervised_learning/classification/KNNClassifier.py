@@ -27,6 +27,8 @@ class KNNClassifier(BaseEstimator):
     """
 
     def __init__(self, n_neighbors=5):
+        if not isinstance(n_neighbors, int) or n_neighbors <= 0:
+            raise ValueError("n_neighbors must be a positive integer.")
         self.n_neighbors = n_neighbors
         self.X_train = None
         self.y_train = None
@@ -43,6 +45,11 @@ class KNNClassifier(BaseEstimator):
         y : array-like of shape (n_samples,)
             The target values (class labels).
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         self.X_train = X
         self.y_train = y
 
@@ -60,6 +67,11 @@ class KNNClassifier(BaseEstimator):
         y_pred : array-like of shape (n_samples,)
             The predicted class labels.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if self.X_train is None or self.y_train is None:
+            raise RuntimeError("The model has not been fitted yet.")
+        
         predictions = [self._predict_single(x) for x in X]
         return np.array(predictions)
 

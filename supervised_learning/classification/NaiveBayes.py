@@ -26,6 +26,11 @@ class NaiveBayes(BaseEstimator):
         y : array-like of shape (n_samples,)
             The target values (class labels).
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         n_samples, n_features = X.shape
         self._classes = np.unique(y)
         n_classes = len(self._classes)
@@ -54,6 +59,9 @@ class NaiveBayes(BaseEstimator):
         y_pred : array-like of shape (n_samples,)
             The predicted class labels.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         return np.array([self._predict(x) for x in X])
 
     def _predict(self, x):
@@ -68,6 +76,8 @@ class NaiveBayes(BaseEstimator):
     def _pdf(self, class_idx, x):
         mean = self._mean[class_idx]
         var = self._var[class_idx]
+        if np.any(var == 0):
+            raise RuntimeError("One or more features have zero variance.")
         numerator = np.exp(-((x - mean) ** 2) / (2 * var))
         denominator = np.sqrt(2 * np.pi * var)
         return numerator / denominator
