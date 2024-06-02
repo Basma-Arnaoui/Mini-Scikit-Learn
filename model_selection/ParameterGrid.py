@@ -16,6 +16,8 @@ class ParameterGrid:
     """
 
     def __init__(self, param_grid):
+        if not isinstance(param_grid, dict):
+            raise ValueError("param_grid must be a dictionary.")
         self.param_grid = param_grid
 
     def __iter__(self):

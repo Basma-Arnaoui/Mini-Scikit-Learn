@@ -22,6 +22,8 @@ class KFold:
     """
 
     def __init__(self, n_splits=5, shuffle=False, random_state=None):
+        if not isinstance(n_splits, int) or n_splits <= 1:
+            raise ValueError("n_splits must be an integer greater than 1.")
         self.n_splits = n_splits
         self.shuffle = shuffle
         self.random_state = random_state
@@ -38,6 +40,11 @@ class KFold:
         y : array-like, shape (n_samples,)
             The target variable for supervised learning problems.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        if y is not None and not isinstance(y, np.ndarray):
+            raise TypeError("y must be a numpy array if provided.")
+
         num_samples = len(X)
         indices = np.arange(num_samples)
         

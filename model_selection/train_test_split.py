@@ -44,8 +44,12 @@ def train_test_split(X, y, test_size=0.25, train_size=None, random_state=None, s
     y_test : array-like of shape (n_test_samples,)
         The testing target values.
     """
-    np.random.seed(random_state)
+    if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+        raise TypeError("X and y must be numpy arrays.")
+    
     if stratify is not None:
+        if not isinstance(stratify, np.ndarray):
+            raise TypeError("Stratify must be a numpy array.")
         if y.shape[0] != stratify.shape[0]:
             raise ValueError("Stratify array should be the same length as y")
 

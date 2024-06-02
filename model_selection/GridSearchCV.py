@@ -37,6 +37,13 @@ class GridSearchCV:
     """
 
     def __init__(self, estimator, param_grid, cv=5, scoring='accuracy'):
+        if not isinstance(param_grid, dict):
+            raise ValueError("param_grid must be a dictionary.")
+        if not isinstance(cv, int) or cv <= 1:
+            raise ValueError("cv must be an integer greater than 1.")
+        if not hasattr(estimator, 'fit') or not hasattr(estimator, 'predict'):
+            raise ValueError("estimator must have 'fit' and 'predict' methods.")
+        
         self.estimator = estimator
         self.param_grid = param_grid
         self.cv = cv
@@ -57,6 +64,11 @@ class GridSearchCV:
         y : array-like of shape (n_samples,)
             The target variable to try to predict in the case of supervised learning.
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         for params in self._param_grid_combinations():
             scores = []
             for train_idx, test_idx in self._k_fold(len(y), self.cv):
@@ -95,3 +107,5 @@ class GridSearchCV:
     def _calculate_score(self, y_true, y_pred):
         if self.scoring == 'accuracy':
             return np.mean(y_true == y_pred)
+        else:
+            raise ValueError(f"Unsupported scoring method: {self.scoring}")

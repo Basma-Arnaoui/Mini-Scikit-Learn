@@ -28,6 +28,13 @@ class MLP:
     """
 
     def __init__(self, layer_sizes, learning_rate=0.1, epochs=200):
+        if not isinstance(layer_sizes, list) or not all(isinstance(i, int) for i in layer_sizes):
+            raise ValueError("layer_sizes must be a list of integers.")
+        if not isinstance(learning_rate, float) or learning_rate <= 0:
+            raise ValueError("learning_rate must be a positive float.")
+        if not isinstance(epochs, int) or epochs <= 0:
+            raise ValueError("epochs must be a positive integer.")
+
         self.layer_sizes = layer_sizes
         self.learning_rate = learning_rate
         self.epochs = epochs
@@ -49,6 +56,11 @@ class MLP:
         return z * (1 - z)
 
     def fit(self, X, y):
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+        
         for epoch in range(self.epochs):
             for x_instance, y_instance in zip(X, y):
                 activations = self._forward_pass(x_instance)
@@ -73,6 +85,9 @@ class MLP:
             self.biases[i] -= self.learning_rate * np.sum(delta, axis=0, keepdims=True)
 
     def predict(self, X):
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         results = []
         for x_instance in X:
             activations = self._forward_pass(x_instance)
@@ -81,5 +96,10 @@ class MLP:
         return np.array(results)
 
     def score(self, X, y):
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+        
         predictions = self.predict(X)
         return np.mean(predictions == y)

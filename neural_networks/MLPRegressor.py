@@ -31,6 +31,17 @@ class MLPRegressor:
     """
 
     def __init__(self, hidden_layer_sizes=(100,), activation='relu', learning_rate=0.001, max_iter=200, tol=1e-4):
+        if not isinstance(hidden_layer_sizes, tuple) or not all(isinstance(i, int) for i in hidden_layer_sizes):
+            raise ValueError("hidden_layer_sizes must be a tuple of integers.")
+        if activation not in {'relu', 'tanh', 'sigmoid', 'linear'}:
+            raise ValueError("activation must be one of {'relu', 'tanh', 'sigmoid', 'linear'}.")
+        if not isinstance(learning_rate, float) or learning_rate <= 0:
+            raise ValueError("learning_rate must be a positive float.")
+        if not isinstance(max_iter, int) or max_iter <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if not isinstance(tol, float) or tol <= 0:
+            raise ValueError("tol must be a positive float.")
+
         self.hidden_layer_sizes = hidden_layer_sizes
         self.activation = activation
         self.learning_rate = learning_rate
@@ -156,6 +167,11 @@ class MLPRegressor:
         y : array-like of shape (n_samples,)
             The target values.
         """
+        if not isinstance(X, np.ndarray) or not isinstance(y, np.ndarray):
+            raise TypeError("X and y must be numpy arrays.")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError("The number of samples in X and y must be equal.")
+
         layer_sizes = [X.shape[1]] + list(self.hidden_layer_sizes) + [y.shape[1]]
         self._initialize_weights(layer_sizes)
         
@@ -185,5 +201,8 @@ class MLPRegressor:
         y_pred : array-like of shape (n_samples,)
             The predicted target values.
         """
+        if not isinstance(X, np.ndarray):
+            raise TypeError("X must be a numpy array.")
+        
         activations = self._forward_pass(X)
         return activations[-1]
