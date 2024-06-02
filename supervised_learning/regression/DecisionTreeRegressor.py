@@ -2,6 +2,9 @@ import numpy as np
 from supervised_learning.BaseEstimator import BaseEstimator
 
 class Node:
+    """
+    Class representing a node in the decision tree.
+    """
     def __init__(self, feature_index=None, threshold=None, left=None, right=None, var_red=None, value=None):
         self.feature_index = feature_index
         self.threshold = threshold
@@ -11,20 +14,40 @@ class Node:
         self.value = value
 
 class DecisionTreeRegressor(BaseEstimator):
+    """
+    Decision Tree regressor.
+
+    Parameters
+    ----------
+    min_samples_split : int, default=2
+        The minimum number of samples required to split an internal node.
+    
+    max_depth : int or None, default=None
+        The maximum depth of the tree.
+
+    Methods
+    -------
+    fit(X, Y)
+        Fit the decision tree regressor to the training data.
+    
+    predict(X)
+        Predict target values for samples in X.
+    """
+
     def __init__(self, min_samples_split=2, max_depth=None):
         self.root = None
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
 
     def _build_tree(self, dataset, depth=0):
-        X, Y = dataset[:,:-1], dataset[:,-1]
+        X, Y = dataset[:, :-1], dataset[:, -1]
         num_samples, num_features = np.shape(X)
 
         if num_samples >= self.min_samples_split and (self.max_depth is None or depth <= self.max_depth):
             best_split = self._get_best_split(dataset, num_samples, num_features)
             if best_split.get("var_red", 0) > 0:
-                left_subtree = self._build_tree(best_split["dataset_left"], depth+1)
-                right_subtree = self._build_tree(best_split["dataset_right"], depth+1)
+                left_subtree = self._build_tree(best_split["dataset_left"], depth + 1)
+                right_subtree = self._build_tree(best_split["dataset_right"], depth + 1)
                 return Node(best_split["feature_index"], best_split["threshold"], left_subtree, right_subtree, best_split["var_red"])
 
         leaf_value = self._calculate_leaf_value(Y)
@@ -67,6 +90,17 @@ class DecisionTreeRegressor(BaseEstimator):
         return np.mean(Y)
 
     def fit(self, X, Y):
+        """
+        Fit the decision tree regressor to the training data.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The training input samples.
+        
+        Y : array-like of shape (n_samples,)
+            The target values.
+        """
         dataset = np.concatenate((X, Y.reshape(-1, 1)), axis=1)
         self.root = self._build_tree(dataset)
 
@@ -80,4 +114,17 @@ class DecisionTreeRegressor(BaseEstimator):
             return self._make_prediction(x, tree.right)
 
     def predict(self, X):
+        """
+        Predict target values for samples in X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        y_pred : array-like of shape (n_samples,)
+            The predicted target values.
+        """
         return np.array([self._make_prediction(x, self.root) for x in X])

@@ -3,40 +3,64 @@ import numpy as np
 import pandas as pd
 
 class LinearRegression(BaseEstimator):
+    """
+    Linear Regression model.
+
+    Methods
+    -------
+    fit(X, y)
+        Fit the linear regression model to the training data.
+    
+    predict(X)
+        Predict target values for samples in X.
+    """
+
     def __init__(self):
         self.coef_ = None  # Coefficients (weights) of the linear regression model
         self.intercept_ = None  # Intercept of the linear regression model
 
     def fit(self, X, y):
-        # Convert DataFrame inputs to NumPy arrays
+        """
+        Fit the linear regression model to the training data.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features) or DataFrame
+            The training input samples.
+        
+        y : array-like of shape (n_samples,) or Series
+            The target values.
+        """
         if isinstance(X, pd.DataFrame):
             X = X.to_numpy()
         if isinstance(y, pd.Series):
             y = y.to_numpy()
 
-        # Check if X is 1-dimensional (i.e., a single feature)
         if X.ndim == 1:
-            X = X.reshape(-1, 1)  # Reshape X to a 2D array with a single feature column
+            X = X.reshape(-1, 1)
 
-        # Add a column of ones to X to account for the intercept term
         X_with_intercept = np.column_stack((np.ones(X.shape[0]), X))
-
-        # Calculate the coefficients using the normal equation (closed-form solution)
         coefficients = np.linalg.inv(X_with_intercept.T @ X_with_intercept) @ X_with_intercept.T @ y
-
-        # Store the coefficients
         self.intercept_ = coefficients[0]
         self.coef_ = coefficients[1:]
 
     def predict(self, X):
-        # Convert DataFrame inputs to NumPy arrays
+        """
+        Predict target values for samples in X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features) or DataFrame
+            The input samples.
+
+        Returns
+        -------
+        y_pred : array-like of shape (n_samples,)
+            The predicted target values.
+        """
         if isinstance(X, pd.DataFrame):
             X = X.to_numpy()
 
-        # Add a column of ones to X to account for the intercept term
         X_with_intercept = np.column_stack((np.ones(X.shape[0]), X))
-
-        # Calculate the predicted values
         predictions = X_with_intercept @ np.concatenate(([self.intercept_], self.coef_))
-
         return predictions

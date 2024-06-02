@@ -1,6 +1,32 @@
 import numpy as np
 
 class MLP:
+    """
+    Multi-Layer Perceptron (MLP) for classification tasks.
+
+    Parameters
+    ----------
+    layer_sizes : list
+        List containing the number of neurons in each layer, including input and output layers.
+    
+    learning_rate : float, default=0.1
+        The learning rate for weight updates.
+    
+    epochs : int, default=200
+        Number of epochs for training.
+
+    Methods
+    -------
+    fit(X, y)
+        Train the MLP on the given data.
+    
+    predict(X)
+        Predict class labels for samples in X.
+    
+    score(X, y)
+        Returns the mean accuracy on the given test data and labels.
+    """
+
     def __init__(self, layer_sizes, learning_rate=0.1, epochs=200):
         self.layer_sizes = layer_sizes
         self.learning_rate = learning_rate

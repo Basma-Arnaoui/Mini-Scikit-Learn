@@ -2,6 +2,40 @@ import numpy as np
 from itertools import product
 
 class GridSearchCV:
+    """
+    Exhaustive search over specified parameter values for an estimator.
+
+    Parameters
+    ----------
+    estimator : estimator object
+        The object to use to fit the data.
+    
+    param_grid : dict
+        Dictionary with parameters names (`str`) as keys and lists of parameter settings to try as values.
+    
+    cv : int, default=5
+        Number of folds in cross-validation.
+    
+    scoring : str, default='accuracy'
+        Strategy to evaluate the performance of the cross-validated model on the test set.
+
+    Attributes
+    ----------
+    best_params_ : dict
+        Parameter setting that gave the best results on the hold out data.
+    
+    best_score_ : float
+        Mean cross-validated score of the best_estimator.
+    
+    results_ : list
+        Contains scores and parameter combinations for all parameter combinations in the grid.
+
+    Methods
+    -------
+    fit(X, y)
+        Run fit with all sets of parameters.
+    """
+
     def __init__(self, estimator, param_grid, cv=5, scoring='accuracy'):
         self.estimator = estimator
         self.param_grid = param_grid
@@ -9,9 +43,20 @@ class GridSearchCV:
         self.scoring = scoring
         self.best_params_ = None
         self.best_score_ = -np.inf
-        self.results_ = []  # Initialize here to ensure it's always defined
+        self.results_ = []
 
     def fit(self, X, y):
+        """
+        Run fit with all sets of parameters.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The data to fit.
+        
+        y : array-like of shape (n_samples,)
+            The target variable to try to predict in the case of supervised learning.
+        """
         for params in self._param_grid_combinations():
             scores = []
             for train_idx, test_idx in self._k_fold(len(y), self.cv):
@@ -27,7 +72,6 @@ class GridSearchCV:
                 self.best_score_ = average_score
                 self.best_params_ = params
 
-        # Sort results after all scores are computed
         self.results_.sort(key=lambda x: x['score'], reverse=True)
         return self
 

@@ -1,6 +1,26 @@
 import numpy as np
 
 class Perceptron:
+    """
+    Perceptron classifier.
+
+    Parameters
+    ----------
+    learning_rate : float, default=0.01
+        Learning rate (between 0.0 and 1.0).
+    
+    n_iters : int, default=1000
+        The number of passes over the training dataset.
+
+    Methods
+    -------
+    fit(X, y)
+        Fit the Perceptron model to the training data.
+    
+    predict(X)
+        Predict class labels for samples in X.
+    """
+
     def __init__(self, learning_rate=0.01, n_iters=1000):
         self.learning_rate = learning_rate
         self.n_iters = n_iters
@@ -9,8 +29,18 @@ class Perceptron:
         self.bias = None
 
     def fit(self, X, y):
+        """
+        Fit the Perceptron model to the training data.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The training input samples.
+        
+        y : array-like of shape (n_samples,)
+            The target values (class labels).
+        """
         n_samples, n_features = X.shape
-        # Initialize weights and bias
         self.weights = np.zeros(n_features)
         self.bias = 0
 
@@ -20,15 +50,40 @@ class Perceptron:
             for idx, x_i in enumerate(X):
                 linear_output = np.dot(x_i, self.weights) + self.bias
                 y_predicted = self.activation_func(linear_output)
-                # Perceptron update rule
                 update = self.learning_rate * (y_[idx] - y_predicted)
                 self.weights += update * x_i
                 self.bias += update
 
     def predict(self, X):
+        """
+        Predict class labels for samples in X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        y_pred : array-like of shape (n_samples,)
+            The predicted class labels.
+        """
         linear_output = np.dot(X, self.weights) + self.bias
         y_predicted = self.activation_func(linear_output)
         return y_predicted
 
     def _unit_step_func(self, x):
+        """
+        Unit step activation function.
+
+        Parameters
+        ----------
+        x : array-like
+            The input data.
+
+        Returns
+        -------
+        result : array-like
+            The output of the unit step function.
+        """
         return np.where(x >= 0, 1, 0)

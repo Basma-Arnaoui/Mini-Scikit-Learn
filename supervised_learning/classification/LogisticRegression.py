@@ -4,6 +4,41 @@ from supervised_learning.BaseEstimator import BaseEstimator
 from sklearn.base import ClassifierMixin
 
 class LogisticRegression(BaseEstimator, ClassifierMixin):
+    """
+    Logistic Regression classifier.
+
+    Parameters
+    ----------
+    learning_rate : float, default=0.01
+        Learning rate for gradient descent.
+    
+    n_iterations : int, default=1000
+        Number of iterations for gradient descent.
+    
+    tol : float, default=1e-5
+        Tolerance for stopping criteria.
+    
+    regularization : float, default=0.01
+        Regularization strength.
+
+    Methods
+    -------
+    fit(X, y)
+        Fit the logistic regression model to the training data.
+    
+    predict_proba(X)
+        Predict class probabilities for samples in X.
+    
+    predict(X)
+        Predict class labels for samples in X.
+    
+    get_params(deep=True)
+        Get parameters for this estimator.
+    
+    set_params(**params)
+        Set the parameters of this estimator.
+    """
+
     def __init__(self, learning_rate=0.01, n_iterations=1000, tol=1e-5, regularization=0.01):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
@@ -16,6 +51,17 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
         return expit(z)
 
     def fit(self, X, y):
+        """
+        Fit the logistic regression model to the training data.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The training input samples.
+        
+        y : array-like of shape (n_samples,)
+            The target values (class labels).
+        """
         m, n = X.shape
         X_b = np.c_[np.ones((m, 1)), X]  # Adding the intercept term
         self.coef_ = np.zeros(n + 1)
@@ -40,16 +86,68 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
         return self
 
     def predict_proba(self, X):
+        """
+        Predict class probabilities for samples in X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        probabilities : array-like of shape (n_samples,)
+            The predicted class probabilities.
+        """
         X_b = np.c_[np.ones((X.shape[0], 1)), X]  # Adding the intercept term
         return self._sigmoid(X_b.dot(np.r_[self.intercept_, self.coef_]))
 
     def predict(self, X):
+        """
+        Predict class labels for samples in X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        y_pred : array-like of shape (n_samples,)
+            The predicted class labels.
+        """
         return (self.predict_proba(X) >= 0.5).astype(int)
 
     def get_params(self, deep=True):
-        return {"learning_rate": self.learning_rate, "n_iterations": self.n_iterations, "tol": self.tol, "regularization": self.regularization}
+        """
+        Get parameters for this estimator.
+
+        Returns
+        -------
+        params : dict
+            Parameter names mapped to their values.
+        """
+        return {
+            "learning_rate": self.learning_rate,
+            "n_iterations": self.n_iterations,
+            "tol": self.tol,
+            "regularization": self.regularization
+        }
 
     def set_params(self, **params):
+        """
+        Set the parameters of this estimator.
+
+        Parameters
+        ----------
+        **params : dict
+            Estimator parameters.
+
+        Returns
+        -------
+        self : object
+            Estimator instance.
+        """
         for param, value in params.items():
             setattr(self, param, value)
         return self
