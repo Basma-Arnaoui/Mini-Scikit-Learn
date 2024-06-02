@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import expit
-from sklearn.base import BaseEstimator, ClassifierMixin
+from supervised_learning.BaseEstimator import BaseEstimator
+from sklearn.base import ClassifierMixin
 
 class LogisticRegression(BaseEstimator, ClassifierMixin):
     def __init__(self, learning_rate=0.01, n_iterations=1000, tol=1e-5, regularization=0.01):
